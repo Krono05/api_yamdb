@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 
+
 class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     lookup_field = 'id'
@@ -17,6 +18,7 @@ class ReviewsViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
         return title.reviews.all()
+
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
