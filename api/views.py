@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 
-class ReviewsViewSet(viewsets.GenericViewSet):
+
+class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     lookup_field = 'id'
 
@@ -19,7 +20,8 @@ class ReviewsViewSet(viewsets.GenericViewSet):
         return title.reviews.all()
 
 
-class CommentsViewSet(viewsets.GenericViewSet):
+
+class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     lookup_field = 'id'
 
