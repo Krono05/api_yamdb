@@ -35,7 +35,8 @@ class Migration(migrations.Migration):
             name='Review',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('score', models.SmallIntegerField()),
+                ('score', models.SmallIntegerField(blank=False, null=False)),
+                ('text', models.TextField(blank=False, null=False)),
                 ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to=settings.AUTH_USER_MODEL)),
                 ('title', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to='api.Title')),
