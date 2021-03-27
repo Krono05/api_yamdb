@@ -5,10 +5,15 @@ from django.urls import path, include
 
 from rest_framework.routers import DefaultRouter
 
-from .views import CategoryViewSet, GenreViewSet, TitleViewSet, ReviewsViewSet, CommentsViewSet
+from .views import (
+    CategoryViewSet,
+    GenreViewSet,
+    TitleViewSet,
+    ReviewsViewSet,
+    CommentsViewSet
+)
 
-
-router = DefaultRouter(trailing_slash=False)
+router = DefaultRouter(trailing_slash=True)
 
 API_V = 'v1'
 
@@ -26,10 +31,14 @@ router.register(
     basename='comments'
 )
 urlpatterns = [
-    path(f'{API_V}/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(
+        f'{API_V}/token/',
+        TokenObtainPairView.as_view(),
+        name='token_obtain_pair'
+    ),
     path(
         f'{API_V}/token/refresh/',
         TokenRefreshView.as_view(), name='token_refresh'
     ),
-    path(f'{API_V}', include(router.urls)),
+    path(f'{API_V}/', include(router.urls)),
 ]

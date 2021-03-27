@@ -55,6 +55,7 @@ class TitleSerializer(serializers.ModelSerializer):
                   'category']
         model = Title
 
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
