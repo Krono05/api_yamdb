@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['id'],
             },
-        )
+        ),
         migrations.CreateModel(
             name='Review',
             fields=[
