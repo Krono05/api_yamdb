@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from rest_framework import viewsets, permissions, filters, status, mixins
 from rest_framework.decorators import action, api_view
@@ -10,7 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 from .models import Category, Genre, Title, Review, User
 from .serializers import (
@@ -23,10 +24,10 @@ from .serializers import (
     UserSerializer
 )
 from .filters import TitleFilterSet
-from .permissions import IsAdmin
+from .permissions import IsAdmin, IsAuthorOrModOrAdmin
 
 
-load_dotenv()
+#load_dotenv()
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -92,12 +93,16 @@ class TitleViewSet(mixins.CreateModelMixin,
 class ReviewsViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     lookup_field = 'id'
+    ordering = ['id']
     http_method_names = ['get', 'post', 'patch', 'delete']
-    permission_classes = []
+    permission_classes = [IsAuthorOrModOrAdmin, IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
+        review = Review.objects.all().filter(pk=self.kwargs.get('id')).exists()
+        if review:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer.save(author=self.request.user, title=title)
 
     def get_queryset(self):
@@ -109,8 +114,9 @@ class ReviewsViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     lookup_field = 'id'
+    ordering = ['id']
     http_method_names = ['get', 'post', 'patch', 'delete']
-    permission_classes = []
+    permission_classes = [IsAuthorOrModOrAdmin, IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         review_id = self.kwargs.get('review_id')
