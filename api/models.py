@@ -3,6 +3,7 @@ from django.db import models
 
 User = get_user_model()
 
+
 class Category(models.Model):
     name = models.CharField(
         verbose_name='Категория',
@@ -84,13 +85,17 @@ class Review(models.Model):
     text = models.TextField(blank=True, null=False)
     author = models.ForeignKey(
         User,
+        verbose_name='Автор',
         on_delete=models.CASCADE,
-        related_name='reviews'
+        related_name='reviews',
     )
     score = models.SmallIntegerField(blank=False, null=False)
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True
     )
+
+    class Meta:
+        ordering = ['id']
 
 
 class Comment(models.Model):
