@@ -13,10 +13,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from datetime import timedelta
 
-#from dotenv import load_dotenv
-
-#load_dotenv()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -150,10 +146,10 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 EMAIL_FROM = 'info@yamdb.ru'
 
-EMAIL_TEXT = ('Please, don\'t reply on this email!!! You just registered on API YamDB '
-             'with email "{email}". For getting your token and using our API '
-             'send POST request to auth/token/ with email and confirmation_'
-             'code "{confirm_code}". Token will return in response body.')
+EMAIL_TEXT = ('Please, don\'t reply on this email! You just registered on API YamDB '
+              'your email "{email}". For getting your token and using our API '
+              'send POST request to auth/token/ with email and confirmation '
+              'code "{confirm_code}".')
 
 # Set simplejwt options
 SIMPLE_JWT = {

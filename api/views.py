@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
@@ -121,10 +121,9 @@ class CommentsViewSet(viewsets.ModelViewSet):
         return review.comments.all()
 
 
-
 @api_view(['POST'])
-
 def send_code(request):
+
     """Регистрация пользователя по email и генерация кода."""
     email = request.data.get('email')
     username = email[:email.find('@')]
@@ -142,6 +141,7 @@ def send_code(request):
 
 @api_view(['POST'])
 def send_token(request):
+
     """Получения токена по email и коду доступа."""
     def get_token(user):
         refresh = RefreshToken.for_user(user)
