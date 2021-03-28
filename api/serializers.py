@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Genre, Title, Comment, Review
+from .models import Category, Genre, Title, Comment, Review, User
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -75,3 +75,8 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         exclude = ['review']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('username', 'first_name', 'last_name', 'email', 'role', 'bio',)
+        model = User
