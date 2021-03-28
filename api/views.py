@@ -12,7 +12,7 @@ from .filters import TitleFilterSet
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 from rest_framework.decorators import action, api_view
 from rest_framework.pagination import PageNumberPagination
@@ -23,7 +23,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .permissions import IsAdmin
 
 
-load_dotenv()
+# load_dotenv()
 
 class CategoryViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'delete']
