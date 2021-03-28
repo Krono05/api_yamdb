@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class User(AbstractUser):
@@ -114,10 +115,17 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews',
     )
-    score = models.SmallIntegerField(blank=False, null=False)
+    score = models.SmallIntegerField(
+        blank=False,
+        null=False,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации', auto_now_add=True
     )
+
+    class Meta:
+        ordering = ['id']
 
 
 class Comment(models.Model):
@@ -141,3 +149,6 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации', auto_now_add=True
     )
+
+    class Meta:
+        ordering = ['id']
