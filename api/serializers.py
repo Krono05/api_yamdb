@@ -55,6 +55,7 @@ class TitleSerializer(serializers.ModelSerializer):
                   'category']
         model = Title
 
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
@@ -73,8 +74,9 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Comment
         exclude = ['review']
+        model = Comment
+
 
 class UserSerializer(serializers.ModelSerializer):
 

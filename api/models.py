@@ -22,6 +22,7 @@ class User(AbstractUser):
     class Meta:
         ordering = ('username',)
 
+
 class Category(models.Model):
     name = models.CharField(
         verbose_name='Категория',
@@ -97,32 +98,45 @@ class Title(models.Model):
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
+        verbose_name='Произведение',
         on_delete=models.CASCADE,
-        related_name='reviews'
+        related_name='reviews',
     )
-    text = models.TextField(blank=True, null=False)
+    text = models.TextField(
+        verbose_name='Текст',
+        blank=True,
+        null=False
+    )
     author = models.ForeignKey(
         User,
+        verbose_name='Автор',
         on_delete=models.CASCADE,
-        related_name='reviews'
+        related_name='reviews',
     )
     score = models.SmallIntegerField(blank=False, null=False)
     pub_date = models.DateTimeField(
-        'Дата публикации', auto_now_add=True
+        verbose_name='Дата публикации', auto_now_add=True
     )
 
 
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
-        on_delete=models.CASCADE
+        verbose_name='Отзыв',
+        on_delete=models.CASCADE,
+        related_name='comments'
     )
-    text = models.TextField(blank=False, null=False),
+    text = models.TextField(
+        verbose_name='Текст',
+        blank=False,
+        null=False
+    )
     author = models.ForeignKey(
         User,
+        verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='comments'
     )
     pub_date = models.DateTimeField(
-        'Дата публикации', auto_now_add=True
+        verbose_name='Дата публикации', auto_now_add=True
     )
