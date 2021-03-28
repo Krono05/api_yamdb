@@ -148,11 +148,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
-EMAIL_FROM = 'api_yamdb@yamdb.ru'
+EMAIL_FROM = 'info@yamdb.ru'
 
-EMAIL_SUBJ = 'Thank you for registering on API YamDB'
-
-EMAIL_TEXT = ('Dont reply on this email!!! You just registered on API YamDB '
+EMAIL_TEXT = ('Please, don\'t reply on this email!!! You just registered on API YamDB '
              'with email "{email}". For getting your token and using our API '
              'send POST request to auth/token/ with email and confirmation_'
              'code "{confirm_code}". Token will return in response body.')
