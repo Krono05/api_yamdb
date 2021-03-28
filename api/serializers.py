@@ -55,6 +55,21 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    def validate(self, attrs):
+        request = self.context['request']
+        if request.data == {}:
+            raise serializers.ValidationError('Нет данных')
+        view = self.context['view']
+        title_id = view.kwargs.get('title_id')
+        user = request.user
+        review = Review.objects.filter(
+            author=user,
+            title_id=title_id
+        ).exists()
+        if review and request.method == 'POST':
+            raise serializers.ValidationError('Отзыв уже есть')
+        return attrs
+
     class Meta:
         exclude = ['title']
         model = Review
