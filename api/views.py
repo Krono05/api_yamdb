@@ -49,7 +49,6 @@ class ReviewsViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
     http_method_names = ['get', 'post', 'patch', 'delete']
     permission_classes = []
-    pagination_class = None
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
@@ -67,7 +66,6 @@ class CommentsViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
     http_method_names = ['get', 'post', 'patch', 'delete']
     permission_classes = []
-    pagination_class = None
 
     def perform_create(self, serializer):
         review_id = self.kwargs.get('review_id')
