@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from django.db.models import Avg
+
 from .models import Category, Genre, Title, Comment, Review, User
 
 
@@ -17,42 +19,33 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class GenreField(serializers.SlugRelatedField):
-    def to_internal_value(self, data):
-        try:
-            return self.get_queryset().get(**{self.slug_field: data})
-        except (TypeError, ValueError):
-            self.fail('invalid')
+class TitleResultSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+    rating = serializers.SerializerMethodField()
 
-    def to_representation(self, value):
-        return GenreSerializer(value).data
+    class Meta:
+        fields = ['id', 'name', 'year', 'rating', 'description', 'genre',
+                  'category']
+        model = Title
 
-
-class CategoryField(serializers.SlugRelatedField):
-    def to_internal_value(self, data):
-        try:
-            return self.get_queryset().get(**{self.slug_field: data})
-        except (TypeError, ValueError):
-            self.fail('invalid')
-
-    def to_representation(self, value):
-        return CategorySerializer(value).data
+    def get_rating(self, obj):
+        return obj.reviews.aggregate(rating=Avg('score')).get('rating')
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreField(
+class TitleInputSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
         many=True,
         slug_field='slug',
         queryset=Genre.objects.all()
     )
-    category = CategoryField(
+    category = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all()
     )
 
     class Meta:
-        fields = ['id', 'name', 'year', 'description', 'genre',
-                  'category']
+        fields = '__all__'
         model = Title
 
 

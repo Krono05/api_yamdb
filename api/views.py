@@ -1,57 +1,92 @@
 from django_filters.rest_framework import DjangoFilterBackend
-
 from django.shortcuts import get_object_or_404
-
-from rest_framework import viewsets, permissions, filters, status
-
-from .models import Category, Genre, Title, Review, User
-from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer, ReviewSerializer, CommentSerializer, UserSerializer )
-from .filters import TitleFilterSet
-
-
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
-from dotenv import load_dotenv
 
+from rest_framework import viewsets, permissions, filters, status, mixins
 from rest_framework.decorators import action, api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from dotenv import load_dotenv
 
+from .models import Category, Genre, Title, Review, User
+from .serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    TitleInputSerializer,
+    TitleResultSerializer,
+    ReviewSerializer,
+    CommentSerializer,
+    UserSerializer
+)
+from .filters import TitleFilterSet
 from .permissions import IsAdmin
 
 
 load_dotenv()
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'delete']
+
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     lookup_field = 'slug'
-    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
 
-class GenreViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'delete']
+
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
     lookup_field = 'slug'
-    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
 
-class TitleViewSet(viewsets.ModelViewSet):
-    serializer_class = TitleSerializer
+
+class TitleViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Title.objects.all()
     lookup_field = 'id'
-    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilterSet
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleResultSerializer
+        return TitleInputSerializer
 
 
 class ReviewsViewSet(viewsets.ModelViewSet):
@@ -123,7 +158,6 @@ def send_token(request):
         return Response(response, status=status.HTTP_200_OK)
     response = {'confirmation_code': 'Неверный код для данного email'}
     return Response(response, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
