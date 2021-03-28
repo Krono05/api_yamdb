@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
@@ -17,12 +18,6 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleInputSerializer, TitleResultSerializer,
                           UserSerializer)
-
-#from dotenv import load_dotenv
-
-
-
-#load_dotenv()
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -67,7 +62,8 @@ class TitleViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    viewsets.GenericViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        rating=Avg('reviews__score')).order_by('id')
     lookup_field = 'id'
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilterSet
