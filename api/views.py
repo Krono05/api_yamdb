@@ -94,8 +94,8 @@ def send_code(request):
     """Регистрация пользователя по email и генерация кода."""
     serializer = EmailSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    email = serializer.data.get('email')
-    username = serializer.data.get('username')
+    email = serializer.validated_data.get('email')
+    username = serializer.validated_data.get('username')
     user = User.objects.get_or_create(email=email, username=username)[0]
     confirm_code = PasswordResetTokenGenerator().make_token(user)
     serializer = UserSerializer(
@@ -116,8 +116,8 @@ def send_token(request):
         return str(refresh.access_token)
     serializer = EmailConfirmCodeSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    email = serializer.data.get('email')
-    confirm_code = serializer.data.get('confirmation_code')
+    email = serializer.validated_data.get('email')
+    confirm_code = serializer.validated_data    .get('confirmation_code')
     user = get_object_or_404(User, email=email)
     if user.confirmation_code == confirm_code:
         response = {'token': get_token(user)}
