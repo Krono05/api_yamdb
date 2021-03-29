@@ -14,17 +14,32 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=20,
         choices=UserRole.choices,
-        default=UserRole.USER
+        default=UserRole.USER,
+        verbose_name='Роль'
     )
-    bio = models.TextField(max_length=500, blank=True)
+    bio = models.TextField('Информация о пользователе', max_length=500, blank=True)
     email = models.EmailField('E-mail', unique=True)
-    confirmation_code = models.CharField(max_length=20)
+    confirmation_code = models.CharField('Код подтверждения', max_length=20)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    @property
+    def is_admin(self):
+        return self.role == self.UserRole.ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == self.UserRole.MODERATOR
+
+    @property
+    def is_user(self):
+        return self.role == self.UserRole.USER
+
     class Meta:
         ordering = ('username',)
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class Category(models.Model):

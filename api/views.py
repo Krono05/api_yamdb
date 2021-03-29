@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.pagination import PageNumberPagination
@@ -16,8 +17,8 @@ from .models import Category, Genre, Review, Title, User
 from .permissions import IsAdmin, IsAuthorOrModOrAdmin, IsAdminOrReadOnly
 from .mixins import (BaseCreateListDestroyMixin,
                      BaseCreateListRetrieveUpdateDestroyMixin)
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer,
+from .serializers import (CategorySerializer, CommentSerializer, EmailSerializer,
+                          EmailConfirmCodeSerializer, GenreSerializer, ReviewSerializer,
                           TitleInputSerializer, TitleResultSerializer,
                           UserSerializer)
 
@@ -97,12 +98,13 @@ class CommentsViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def send_code(request):
-
     """Регистрация пользователя по email и генерация кода."""
-    email = request.data.get('email')
-    username = email[:email.find('@')]
+    serializer = EmailSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.data.get('email')
+    username = serializer.data.get('username')
     user = User.objects.get_or_create(email=email, username=username)[0]
-    confirm_code = default_token_generator.make_token(user)
+    confirm_code = PasswordResetTokenGenerator().make_token(user)
     serializer = UserSerializer(
         user, data={'confirmation_code': confirm_code}, partial=True
     )
@@ -115,14 +117,14 @@ def send_code(request):
 
 @api_view(['POST'])
 def send_token(request):
-
     """Получения токена по email и коду доступа."""
     def get_token(user):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
-
-    email = request.data.get('email')
-    confirm_code = request.data.get('confirmation_code')
+    serializer = EmailConfirmCodeSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.data.get('email')
+    confirm_code = serializer.data.get('confirmation_code')
     user = get_object_or_404(User, email=email)
     if user.confirmation_code == confirm_code:
         response = {'token': get_token(user)}

@@ -6,7 +6,7 @@ from .models import User
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            return request.user.is_staff or request.user.role == 'admin'
+            return request.user.is_staff or request.user.role == User.UserRole.ADMIN
         return False
 
 
@@ -18,7 +18,8 @@ class IsAuthorOrModOrAdmin(permissions.BasePermission):
                 and (
                         obj.author == request.user
                         or request.user.is_staff
-                        or request.user.role in ['admin', 'moderator']
+                        or request.user.role == User.UserRole.ADMIN
+                        or request.user.role == User.UserRole.MODERATOR
                 )
         )
 
