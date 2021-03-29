@@ -51,7 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         request = self.context['request']
-        if request.data == {}:
+        if not request.data:
             raise serializers.ValidationError('Нет данных')
         view = self.context['view']
         title_id = view.kwargs.get('title_id')
@@ -87,9 +87,11 @@ class UserSerializer(serializers.ModelSerializer):
                   'email', 'role', 'bio',)
         model = User
 
+
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
     username = serializers.CharField()
+
 
 class EmailConfirmCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()

@@ -17,7 +17,11 @@ class User(AbstractUser):
         default=UserRole.USER,
         verbose_name='Роль'
     )
-    bio = models.TextField('Информация о пользователе', max_length=500, blank=True)
+    bio = models.TextField(
+        'Информация о пользователе',
+        max_length=500,
+        blank=True
+    )
     email = models.EmailField('E-mail', unique=True)
     confirmation_code = models.CharField('Код подтверждения', max_length=20)
 
@@ -144,14 +148,17 @@ class Review(models.Model):
     score = models.SmallIntegerField(
         blank=False,
         null=False,
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        validators=[
+            MinValueValidator(1, 'Оценка не может быть меньше 1'),
+            MaxValueValidator(10, 'Оценка не может быть больше 10')
+        ]
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации', auto_now_add=True
     )
 
     class Meta:
-        ordering = ['id']
+        ordering = ['id', 'pub_date']
 
 
 class Comment(models.Model):
@@ -177,4 +184,4 @@ class Comment(models.Model):
     )
 
     class Meta:
-        ordering = ['id']
+        ordering = ['id', 'pub_date']
