@@ -6,14 +6,14 @@ from .models import Category, Comment, Genre, Review, Title, User
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ['name', 'slug']
+        exclude = ['id']
         model = Category
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ['name', 'slug']
+        exclude = ['id']
         model = Genre
 
 
@@ -23,8 +23,7 @@ class TitleResultSerializer(serializers.ModelSerializer):
     rating = serializers.FloatField()
 
     class Meta:
-        fields = ['id', 'name', 'year', 'rating', 'description', 'genre',
-                  'category']
+        fields = '__all__'
         model = Title
 
 

@@ -13,67 +13,41 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .filters import TitleFilterSet
 from .models import Category, Genre, Review, Title, User
-from .permissions import IsAdmin, IsAuthorOrModOrAdmin
+from .permissions import IsAdmin, IsAuthorOrModOrAdmin, IsAdminOrReadOnly
+from .mixins import (BaseCreateListDestroyMixin,
+                     BaseCreateListRetrieveUpdateDestroyMixin)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleInputSerializer, TitleResultSerializer,
                           UserSerializer)
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(BaseCreateListDestroyMixin, viewsets.GenericViewSet):
+    permission_classes = [IsAdminOrReadOnly]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     lookup_field = 'slug'
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    def get_permissions(self):
-        if self.action == 'list':
-            permission_classes = [permissions.AllowAny]
-        else:
-            permission_classes = [IsAdmin]
-        return [permission() for permission in permission_classes]
 
-
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class GenreViewSet(BaseCreateListDestroyMixin, viewsets.GenericViewSet):
+    permission_classes = [IsAdminOrReadOnly]
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
     lookup_field = 'slug'
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
-    def get_permissions(self):
-        if self.action == 'list':
-            permission_classes = [permissions.AllowAny]
-        else:
-            permission_classes = [IsAdmin]
-        return [permission() for permission in permission_classes]
 
-
-class TitleViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
+class TitleViewSet(BaseCreateListRetrieveUpdateDestroyMixin,
                    viewsets.GenericViewSet):
+    permission_classes = [IsAdminOrReadOnly]
     queryset = Title.objects.all().annotate(
         rating=Avg('reviews__score')).order_by('id')
     lookup_field = 'id'
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilterSet
-
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            permission_classes = [permissions.AllowAny]
-        else:
-            permission_classes = [IsAdmin]
-        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

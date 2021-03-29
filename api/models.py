@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from .validators import year_validator
+
 
 class User(AbstractUser):
     class UserRole(models.TextChoices):
@@ -27,7 +29,7 @@ class User(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(
-        verbose_name='Категория',
+        verbose_name='Наименование категории',
         max_length=100
     )
     slug = models.SlugField(
@@ -35,16 +37,18 @@ class Category(models.Model):
         unique=True
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ['id']
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        return self.name
 
 
 class Genre(models.Model):
     name = models.CharField(
-        verbose_name='Жанр',
+        verbose_name='Наименование жанра',
         max_length=100
     )
     slug = models.SlugField(
@@ -52,22 +56,26 @@ class Genre(models.Model):
         unique=True
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ['id']
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        return self.name
 
 
 class Title(models.Model):
     name = models.CharField(
-        verbose_name='Произведение',
-        max_length=200
+        verbose_name='Заголовок произведения',
+        max_length=200,
+        db_index=True
     )
     year = models.PositiveSmallIntegerField(
         verbose_name='Год выпуска',
         blank=True,
-        null=True
+        null=True,
+        validators=[year_validator]
     )
 
     description = models.TextField(
@@ -89,6 +97,10 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         related_name='titles'
     )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
     def __str__(self):
         return self.name
