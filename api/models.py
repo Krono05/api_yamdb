@@ -30,7 +30,8 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(
         verbose_name='Наименование категории',
-        max_length=100
+        max_length=100,
+        db_index=True
     )
     slug = models.SlugField(
         verbose_name='Slug категории',
@@ -49,7 +50,8 @@ class Category(models.Model):
 class Genre(models.Model):
     name = models.CharField(
         verbose_name='Наименование жанра',
-        max_length=100
+        max_length=100,
+        db_index=True
     )
     slug = models.SlugField(
         verbose_name='Slug жанра',
